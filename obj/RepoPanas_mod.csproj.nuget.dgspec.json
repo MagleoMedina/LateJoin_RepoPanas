@@ -1,0 +1,107 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/magleo/Documentos/Codes/mod_repo/RepoPanas_mod/RepoPanas_mod.csproj": {}
+  },
+  "projects": {
+    "/home/magleo/Documentos/Codes/mod_repo/RepoPanas_mod/RepoPanas_mod.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/magleo/Documentos/Codes/mod_repo/RepoPanas_mod/RepoPanas_mod.csproj",
+        "projectName": "RepoPanas_mod",
+        "projectPath": "/home/magleo/Documentos/Codes/mod_repo/RepoPanas_mod/RepoPanas_mod.csproj",
+        "packagesPath": "/home/magleo/.nuget/packages/",
+        "outputPath": "/home/magleo/Documentos/Codes/mod_repo/RepoPanas_mod/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/magleo/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netstandard2.1"
+        ],
+        "sources": {
+          "/usr/lib64/dotnet/library-packs": {},
+          "https://api.nuget.org/v3/index.json": {},
+          "https://api.nuget.org/v3/index.json": {},
+          "https://nuget.bepinex.dev/v3/index.json": {},
+          "https://nuget.windows10ce.com/nuget/v3/index.json": {}
+        },
+        "frameworks": {
+          "netstandard2.1": {
+            "targetAlias": "netstandard2.1",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.100"
+      },
+      "frameworks": {
+        "netstandard2.1": {
+          "targetAlias": "netstandard2.1",
+          "dependencies": {
+            "BepInEx.Analyzers": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.*, )"
+            },
+            "BepInEx.Core": {
+              "include": "Compile, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "target": "Package",
+              "version": "[5.*, )"
+            },
+            "BepInEx.PluginInfoProps": {
+              "target": "Package",
+              "version": "[2.*, )"
+            },
+            "HarmonyX": {
+              "target": "Package",
+              "version": "[2.*, )"
+            },
+            "Linkoid.Repo.Plugin.Build": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[*, )"
+            },
+            "R.E.P.O.GameLibs.Steam": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[*-*, )"
+            },
+            "UnityEngine.Modules": {
+              "include": "Compile",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2022.3.*, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "NETStandard.Library": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/lib64/dotnet/sdk/9.0.118/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

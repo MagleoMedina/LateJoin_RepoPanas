@@ -1,0 +1,9 @@
+/home/magleo/Documentos/Codes/mod_repo/RepoPanas_mod/obj/Debug/netstandard2.1/RepoPanas_mod.csproj.AssemblyReference.cache
+/home/magleo/Documentos/Codes/mod_repo/RepoPanas_mod/obj/Debug/netstandard2.1/MyPluginInfo.cs
+/home/magleo/Documentos/Codes/mod_repo/RepoPanas_mod/obj/Debug/netstandard2.1/RepoPanas_mod.GeneratedMSBuildEditorConfig.editorconfig
+/home/magleo/Documentos/Codes/mod_repo/RepoPanas_mod/obj/Debug/netstandard2.1/RepoPanas_mod.AssemblyInfoInputs.cache
+/home/magleo/Documentos/Codes/mod_repo/RepoPanas_mod/obj/Debug/netstandard2.1/RepoPanas_mod.AssemblyInfo.cs
+/home/magleo/Documentos/Codes/mod_repo/RepoPanas_mod/obj/Debug/netstandard2.1/RepoPanas_mod.csproj.CoreCompileInputs.cache
+/home/magleo/Documentos/Codes/mod_repo/RepoPanas_mod/bin/Debug/netstandard2.1/RepoPanas_mod.deps.json
+/home/magleo/Documentos/Codes/mod_repo/RepoPanas_mod/bin/Debug/netstandard2.1/RepoPanas_mod.dll
+/home/magleo/Documentos/Codes/mod_repo/RepoPanas_mod/obj/Debug/netstandard2.1/RepoPanas_mod.dll
