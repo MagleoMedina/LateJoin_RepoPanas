@@ -55,14 +55,11 @@
             },
             "BepInEx.Core": {
               "include": "Compile, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
               "target": "Package",
               "version": "[5.*, )"
             },
             "BepInEx.PluginInfoProps": {
-              "target": "Package",
-              "version": "[2.*, )"
-            },
-            "HarmonyX": {
               "target": "Package",
               "version": "[2.*, )"
             },

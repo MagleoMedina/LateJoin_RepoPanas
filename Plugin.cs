@@ -1,3 +1,4 @@
+using System.Linq;
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
@@ -17,12 +18,29 @@ public class Plugin : BaseUnityPlugin
     private void Awake()
     {
         Instance = this;
+
+        Logger.LogInfo("[RepoPanas_mod] Awake — Plugin starting.");
+
+        StatsPersistence.Initialize(Paths.PluginPath);
+        StatsPersistence.Log("PLUGIN", "=== Plugin.Awake ===");
+        StatsPersistence.Log("PLUGIN", $"PluginPath={Paths.PluginPath}");
+        StatsPersistence.Log("PLUGIN", $"GUID={Info.Metadata.GUID} Name={Info.Metadata.Name} Version={Info.Metadata.Version}");
+
         Patch();
     }
 
     internal void Patch()
     {
+        StatsPersistence.Log("PLUGIN", "=== Patching ===");
+
         Harmony ??= new Harmony(Info.Metadata.GUID);
+        StatsPersistence.Log("PLUGIN", $"Harmony GUID={Info.Metadata.GUID}");
+
         Harmony.PatchAll();
+
+        int patchCount = Harmony.GetPatchedMethods().Count();
+        StatsPersistence.Log("PLUGIN", $"Harmony patches applied: {patchCount}");
+
+        Logger.LogInfo($"[RepoPanas_mod] Patched {patchCount} methods.");
     }
 }
