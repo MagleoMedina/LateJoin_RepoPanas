@@ -22,5 +22,9 @@
     <Reference Include="0Harmony">
       <HintPath>libs\0Harmony.dll</HintPath>
     </Reference>
+    <Reference Include="REPOLib">
+      <HintPath>libs\REPOLib.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
   </ItemGroup>
 </Project>

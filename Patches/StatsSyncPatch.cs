@@ -6,6 +6,7 @@ using System.Reflection;
 using HarmonyLib;
 using Photon.Pun;
 using Photon.Realtime;
+using REPOLib.Modules;
 using UnityEngine;
 
 namespace RepoPanas_mod.Patches;
@@ -117,7 +118,8 @@ internal static class StatsSyncPatch
             }
 
             int health = StatsManager.instance.GetPlayerHealth(steamId);
-            StatsPersistence.Log("PATCH", $"[SaveCurrentStats] Health read: {health}");
+            int maxHealth = StatsManager.instance.GetPlayerMaxHealth(steamId) + 100;
+            StatsPersistence.Log("PATCH", $"[SaveCurrentStats] Health read: {health} MaxHealth: {maxHealth}");
 
             float energy = 0;
             if (_pcEnergyField != null && PlayerController.instance != null)
@@ -138,19 +140,28 @@ internal static class StatsSyncPatch
             }
 
             var upgrades = new Dictionary<string, int>();
-            if (StatsManager.instance.dictionaryOfDictionaries != null)
+            if (StatsManager.instance != null)
             {
                 foreach (string key in PlayerStatsData.UpgradeKeys)
                 {
                     try
                     {
-                        if (StatsManager.instance.dictionaryOfDictionaries.TryGetValue(key, out var dict)
-                            && dict.TryGetValue(steamId, out int val))
+                        var field = AccessTools.Field(typeof(StatsManager), key);
+                        if (field != null)
                         {
-                            upgrades[key] = val;
+                            var dict = field.GetValue(StatsManager.instance) as Dictionary<string, int>;
+                            if (dict != null && dict.TryGetValue(steamId, out int val))
+                            {
+                                upgrades[key] = val;
+                            }
+                            else
+                            {
+                                upgrades[key] = 0;
+                            }
                         }
                         else
                         {
+                            StatsPersistence.Log("PATCH", $"[SaveCurrentStats] Field not found: {key}");
                             upgrades[key] = 0;
                         }
                     }
@@ -163,7 +174,7 @@ internal static class StatsSyncPatch
             }
             else
             {
-                StatsPersistence.Log("PATCH", "[SaveCurrentStats] WARNING: dictionaryOfDictionaries is null");
+                StatsPersistence.Log("PATCH", "[SaveCurrentStats] WARNING: StatsManager.instance is null");
             }
 
             var data = new PlayerStatsData
@@ -171,6 +182,7 @@ internal static class StatsSyncPatch
                 SteamId = steamId,
                 PlayerName = PhotonNetwork.LocalPlayer?.NickName ?? "Unknown",
                 Health = health,
+                MaxHealth = maxHealth,
                 Energy = energy,
                 Upgrades = upgrades,
                 Timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
@@ -228,6 +240,42 @@ internal static class StatsSyncPatch
             StatsPersistence.Log("PATCH", "[OnPlayerAvatarStart] No saved checkpoint. Saving current stats as checkpoint...");
             SaveCurrentStats(mySteamId, __instance);
         }
+
+        Plugin.Instance.StartCoroutine(ForceUIRefresh());
+    }
+
+    private static IEnumerator ForceUIRefresh()
+    {
+        yield return new WaitForSeconds(1.5f);
+
+        StatsPersistence.Log("UI_REFRESH", "Starting UI refresh...");
+
+        try
+        {
+            if (PlayerAvatar.instance != null)
+            {
+                var animRef = AccessTools.FieldRefAccess<PlayerAvatar, bool>("levelAnimationCompleted");
+                animRef(PlayerAvatar.instance) = true;
+                PlayerAvatar.instance.LoadingLevelAnimationCompleted();
+                StatsPersistence.Log("UI_REFRESH", "LoadingLevelAnimationCompleted called");
+            }
+        }
+        catch (Exception ex)
+        {
+            StatsPersistence.Log("UI_REFRESH", $"LoadingLevelAnimationCompleted ERROR: {ex.Message}");
+        }
+
+        try
+        {
+            Canvas.ForceUpdateCanvases();
+            StatsPersistence.Log("UI_REFRESH", "Canvas.ForceUpdateCanvases called");
+        }
+        catch (Exception ex)
+        {
+            StatsPersistence.Log("UI_REFRESH", $"Canvas.ForceUpdateCanvases ERROR: {ex.Message}");
+        }
+
+        StatsPersistence.Log("UI_REFRESH", "UI refresh complete");
     }
 
     private static IEnumerator RestoreStatsWithRetry(PlayerAvatar avatar, string steamId, PlayerStatsData data)
@@ -290,6 +338,28 @@ internal static class StatsSyncPatch
                 }
             }
 
+            // Restore MaxHealth
+            if (data.MaxHealth > 0 && PlayerAvatar.instance?.playerHealth != null)
+            {
+                try
+                {
+                    int currentMax = PlayerAvatar.instance.playerHealth.maxHealth;
+                    if (currentMax != data.MaxHealth)
+                    {
+                        PlayerAvatar.instance.playerHealth.maxHealth = data.MaxHealth;
+                        StatsPersistence.Log("RESTORE", $"MaxHealth: {currentMax} -> {data.MaxHealth}");
+                    }
+                    else
+                    {
+                        StatsPersistence.Log("RESTORE", $"MaxHealth: already correct ({currentMax})");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    StatsPersistence.Log("RESTORE", $"MaxHealth: ERROR {ex.Message}");
+                }
+            }
+
             // Restore Energy
             if (!energyRestored && _pcEnergyField != null)
             {
@@ -341,34 +411,58 @@ internal static class StatsSyncPatch
                 StatsPersistence.Log("RESTORE", "Energy: skipped (field not resolved)");
             }
 
-            // Restore Upgrades
-            if (StatsManager.instance?.dictionaryOfDictionaries != null)
+            // Restore Upgrades via REPOLib PlayerUpgrade API
+            foreach (var kvp in data.Upgrades)
             {
-                foreach (var kvp in data.Upgrades)
+                try
                 {
-                    try
+                    if (kvp.Value <= 0) continue;
+
+                    var playerUpgrade = Upgrades.GetUpgrade(kvp.Key);
+                    if (playerUpgrade != null)
                     {
-                        if (StatsManager.instance.dictionaryOfDictionaries.TryGetValue(kvp.Key, out var dict))
+                        int currentVal = playerUpgrade.GetLevel(steamId);
+                        if (currentVal != kvp.Value)
+                        {
+                            playerUpgrade.SetLevel(steamId, kvp.Value);
+                            StatsPersistence.Log("RESTORE", $"Upgrade {kvp.Key}: {currentVal} -> {kvp.Value} (via PlayerUpgrade)");
+                        }
+                        else
+                        {
+                            StatsPersistence.Log("RESTORE", $"Upgrade {kvp.Key}: already correct ({currentVal})");
+                        }
+                    }
+                    else
+                    {
+                        var field = StatsManager.instance != null
+                            ? AccessTools.Field(typeof(StatsManager), kvp.Key)
+                            : null;
+                        var dict = field?.GetValue(StatsManager.instance) as Dictionary<string, int>;
+                        if (dict != null)
                         {
                             int currentVal = dict.TryGetValue(steamId, out int cv) ? cv : 0;
                             if (currentVal != kvp.Value)
                             {
                                 dict[steamId] = kvp.Value;
-                                StatsPersistence.Log("RESTORE", $"Upgrade {kvp.Key}: {currentVal} -> {kvp.Value}");
+                                StatsPersistence.Log("RESTORE", $"Upgrade {kvp.Key}: {currentVal} -> {kvp.Value} (fallback reflection)");
                             }
                             else
                             {
                                 StatsPersistence.Log("RESTORE", $"Upgrade {kvp.Key}: already correct ({currentVal})");
                             }
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        StatsPersistence.Log("RESTORE", $"Upgrade {kvp.Key}: ERROR {ex.Message}");
+                        else
+                        {
+                            StatsPersistence.Log("RESTORE", $"Upgrade {kvp.Key}: no upgrade or field found, skipping");
+                        }
                     }
                 }
-                upgradesRestored = totalUpgrades;
+                catch (Exception ex)
+                {
+                    StatsPersistence.Log("RESTORE", $"Upgrade {kvp.Key}: ERROR {ex.Message}");
+                }
             }
+            upgradesRestored = totalUpgrades;
 
             if (healthRestored && energyRestored)
             {

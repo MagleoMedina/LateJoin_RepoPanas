@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RepoPanas_mod")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5e3e412dfa26a9b86a8929bc770336b1ec2916f9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c7b6c0c0fdc9a1d71e81d6effb827d02bac02e30")]
 [assembly: System.Reflection.AssemblyProductAttribute("RepoPanas_mod")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RepoPanas_mod")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
