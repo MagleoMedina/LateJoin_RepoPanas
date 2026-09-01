@@ -13,7 +13,7 @@ internal static class EnvironmentPatch
     private static void OnDisconnectedPostfix()
     {
         _disconnected = true;
-        StatsPersistence.Log("PATCH", "[OnDisconnected] _disconnected set to TRUE");
+        StatsPersistence.Log("PATCH", "[OnDisconnected] ENTRY — _disconnected set to TRUE");
     }
 
     [HarmonyPostfix]
@@ -21,7 +21,7 @@ internal static class EnvironmentPatch
     private static void OnJoinedRoomPostfix()
     {
         _disconnected = false;
-        StatsPersistence.Log("PATCH", $"[OnJoinedRoom] _disconnected set to FALSE. Room={PhotonNetwork.CurrentRoom?.Name} Players={PhotonNetwork.CurrentRoom?.PlayerCount}");
+        StatsPersistence.Log("PATCH", $"[OnJoinedRoom] ENTRY — _disconnected set to FALSE. Room={PhotonNetwork.CurrentRoom?.Name} Players={PhotonNetwork.CurrentRoom?.PlayerCount}");
     }
 
     [HarmonyPrefix]

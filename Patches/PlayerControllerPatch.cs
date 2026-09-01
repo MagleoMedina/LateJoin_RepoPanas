@@ -124,7 +124,7 @@ internal static class PlayerControllerPatch
                 StatsPersistence.Log("PATCH", "[PhysGrabberUpdate] PlayerController is null, blocking.");
                 return false;
             }
-            StatsPersistence.Log("PATCH", $"[PhysGrabberUpdate] OK. PlayerController.instance exists.");
+            StatsPersistence.Log("PATCH", $"[PhysGrabberUpdate] OK. grabStrength={__instance.grabStrength:F1} throwStrength={__instance.throwStrength:F1} grabRange={__instance.grabRange:F1}");
         }
         catch (Exception ex)
         {

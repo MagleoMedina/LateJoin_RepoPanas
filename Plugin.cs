@@ -25,8 +25,10 @@ public class Plugin : BaseUnityPlugin
         StatsPersistence.Log("PLUGIN", "=== Plugin.Awake ===");
         StatsPersistence.Log("PLUGIN", $"PluginPath={Paths.PluginPath}");
         StatsPersistence.Log("PLUGIN", $"GUID={Info.Metadata.GUID} Name={Info.Metadata.Name} Version={Info.Metadata.Version}");
+        StatsPersistence.Log("PLUGIN", ">>> v3.0 — NetworkedEvent sync with runtime fields <<<");
 
         Patch();
+        StatsSyncPatch.RegisterNetworkedEvents();
     }
 
     internal void Patch()
